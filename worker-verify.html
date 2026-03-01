@@ -156,11 +156,6 @@
             <small>${token.includes('TEST') ? 'Test Mode' : 'Valid QR Token'}</small>
         `;
 
-        function getBaseUrl() {
-            const currentUrl = window.location.href;
-            return currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-        }
-
         function verifyWorker() {
             const workerId = document.getElementById('workerId').value.trim();
             const password = document.getElementById('password').value.trim();
@@ -185,8 +180,17 @@
             const isValid = validWorkers.some(w => w.id === workerId && w.pass === password);
 
             if (isValid) {
-                const baseUrl = getBaseUrl();
-                const formUrl = `${baseUrl}recycling-form.html?worker=${encodeURIComponent(workerId)}&token=${encodeURIComponent(token)}&location=${location}`;
+                // 获取当前页面的路径
+                const path = window.location.pathname;
+                const basePath = path.substring(0, path.lastIndexOf('/') + 1);
+                const baseUrl = window.location.origin + basePath;
+                
+                // 构建recycling-form的完整URL
+                const formUrl = baseUrl + 'recycling-form.html?worker=' + encodeURIComponent(workerId) + '&token=' + encodeURIComponent(token) + '&location=' + encodeURIComponent(location);
+                
+                console.log('Redirecting to:', formUrl);
+                
+                // 跳转到recycling-form
                 window.location.href = formUrl;
             } else {
                 document.getElementById('errorMsg').textContent = '❌ Invalid Worker ID or Access Code';
